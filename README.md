@@ -191,11 +191,12 @@ Refinement is triggered when P(accept) < threshold.
 ## Citation
 
 ```bibtex
-@article{rpro2025,
+@article{hsu2024rpro,
   title={RPRO: Ranked Preference Reinforcement Optimization for Enhancing Medical QA and Diagnostic Reasoning},
-  author={Anonymous},
-  journal={Advances in Neural Information Processing Systems},
-  year={2025}
+  author={Hsu, Chia-Hsuan and Ding, Jun-En and Hsu, Hsin-Ling and Liu, Feng and Hung, Fang-Ming},
+  journal={arXiv preprint arXiv:2509.00974},
+  year={2024},
+  url={https://arxiv.org/abs/2509.00974}
 }
 ```
 
