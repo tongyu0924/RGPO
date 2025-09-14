@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class JsonlGRPODataset(Dataset):
+class JsonlRPRODataset(Dataset):
     def __init__(self, data_file: str, tokenizer, max_length: int = 512): 
         self.tokenizer = tokenizer
         self.max_length = max_length
@@ -115,7 +115,7 @@ def collate_fn(batch):
     return batch
 
 
-class JsonlGRPOTrainer:
+class JsonlRPROTrainer:
     def __init__(self, model_name: str = "gpt2", device: str = "auto",
                  beta: float = 0.1, temperature: float = 1.0):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device == "auto" else torch.device(device)
@@ -210,7 +210,7 @@ class JsonlGRPOTrainer:
     def _linear_rewards_from_rank(self, k: int) -> torch.Tensor:
         if k <= 1:
             return torch.zeros(1, device=self.device)  # 若只有一個候選樣本，沒有排名可比，優勢值設為0
-        # GRPO標準：將排名轉換為優勢函數，排名越高（越好）的樣本，優勢值越大
+        # 將排名轉換為優勢函數，排名越高（越好）的樣本，優勢值越大
         # 公式：advantage = (k-1-i) - (k-1)/2
         # - (k-1-i)：讓最佳樣本分數最高，最差樣本分數最低
         # - 減去 (k-1)/2：確保所有樣本的平均值為0，避免偏置
@@ -249,13 +249,13 @@ class JsonlGRPOTrainer:
         self._last_rewards = self._linear_rewards_from_rank(K) 
         return policy_scores, kl_divs
 
-    def compute_grpo_loss(self, policy_logp: torch.Tensor, kl_div: torch.Tensor):
+    def compute_rpro_loss(self, policy_logp: torch.Tensor, kl_div: torch.Tensor):
         if self._last_rewards is None:
             advantages = torch.zeros_like(policy_logp)
         else:
             advantages = self._last_rewards.to(policy_logp.device)
 
-        # GRPO損失：直接使用advantages加權的policy gradient
+        # RPRO損失：直接使用advantages加權的policy gradient
         pg_loss = -(advantages * policy_logp).mean()
         
         # 真正的KL散度懲罰項
@@ -329,7 +329,7 @@ class JsonlGRPOTrainer:
         plt.plot(steps, kl_ma, linestyle='-', linewidth=2, label='KL (MA50)')
         plt.plot(steps, pair_ma, linestyle='-', linewidth=2, label='Pairwise (MA50)')
 
-        plt.title('GRPO Training Loss Curves (Fixed KL Divergence)')
+        plt.title('RPRO Training Loss Curves (Fixed KL Divergence)')
         plt.xlabel('Global Training Step')
         plt.ylabel('Loss')
         plt.legend()
@@ -342,7 +342,7 @@ class JsonlGRPOTrainer:
 
     def train(self, data_file: str, output_dir: str, epochs: int = 3, batch_size: int = 1,
               lr: float = 1e-5, use_pairwise: bool = True, pairwise_weight: float = 0.1):
-        dataset = JsonlGRPODataset(data_file, self.tokenizer)
+        dataset = JsonlRPRODataset(data_file, self.tokenizer)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
 
         optimizer = AdamW(self.policy_model.parameters(), lr=lr, weight_decay=0.01)
@@ -367,8 +367,8 @@ class JsonlGRPOTrainer:
                     logger.warning(f"發現NaN/Inf在kl_div，跳過這個batch")
                     continue
                     
-                grpo_loss, pg_only, kl_penalty = self.compute_grpo_loss(policy_logp, kl_div)
-                total_loss_step = grpo_loss
+                rpro_loss, pg_only, kl_penalty = self.compute_rpro_loss(policy_logp, kl_div)
+                total_loss_step = rpro_loss
                 pw_loss_val = 0.0
 
                 if use_pairwise:
@@ -424,10 +424,10 @@ class JsonlGRPOTrainer:
         final_dir.mkdir(exist_ok=True)
         self.policy_model.save_pretrained(final_dir)
         self.tokenizer.save_pretrained(final_dir)
-        logger.info(f"GRPO訓練完成，模型保存到 {final_dir}")
+        logger.info(f"RPRO訓練完成，模型保存到 {final_dir}")
 
     def evaluate_preferences(self, test_data_file: str):
-        dataset = JsonlGRPODataset(test_data_file, self.tokenizer)
+        dataset = JsonlRPRODataset(test_data_file, self.tokenizer)
         self.policy_model.eval()
 
         correct_rankings = 0
@@ -456,11 +456,11 @@ if __name__ == '__main__':
     # 設置環境變量優化顯存使用
     os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
     
-    data_file = "/content/grpo_cot_pairs.jsonl"
-    output_dir = "./grpo_output"
+    data_file = "/content/rpro_cot_pairs.jsonl"
+    output_dir = "./rpro_output"
 
     # 調整參數讓訓練更穩定
-    trainer = JsonlGRPOTrainer(
+    trainer = JsonlRPROTrainer(
         model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
         beta=0.01,  # KL係數
         temperature=1.0
