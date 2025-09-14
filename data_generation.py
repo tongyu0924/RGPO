@@ -16,7 +16,7 @@ from textwrap import dedent
 # Runtime config
 # -----------------------------
 INPUT_PATH = os.getenv("INPUT_PATH", "/content/ori_pqal_2.json")
-OUTPUT_PATH = os.getenv("OUTPUT_PATH", "/content/grpo_cot_pairs.jsonl")
+OUTPUT_PATH = os.getenv("OUTPUT_PATH", "/content/rpro_cot_pairs.jsonl")
 ACCEPTANCE_THRESHOLD = float(os.getenv("ACCEPTANCE_THRESHOLD", 0.6))  # tuned threshold
 
 USE_OPENAI = os.getenv("OPENAI_API_KEY") is not None
