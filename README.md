@@ -189,6 +189,7 @@ Refinement is triggered when P(accept) < threshold.
 ```
 
 ## Citation
+If you find this work useful, please consider citing our paper.
 <!--
 ```bibtex
 @article{hsu2025rpro,
