@@ -497,9 +497,7 @@ class JsonlRGPOTrainer:
 if __name__ == "__main__":
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
-    # Paper settings (Section V.A):
-    #   model: Gemma 2B | optimizer: AdamW | lr=5e-5 | batch=16 | epochs=3
-    #   β=0.1 | K=5 rollouts (top M=4) | acceptance threshold θ=0.6
+    # Parameters settings
     trainer = JsonlRGPOTrainer(
         model_name="google/gemma-2b",
         beta=0.1,          # KL regularization weight β (Fig. 2 optimal)
