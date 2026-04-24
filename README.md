@@ -1,4 +1,4 @@
-# RPRO: Ranked Preference Reinforcement Optimization
+# RGPO: Ranking-Guided Preference Optimization for Reliable Clinical Reasoning
 
 A novel framework that enhances medical question answering by combining reinforcement learning with preference-driven reasoning refinement. RPRO automatically identifies and corrects low-quality reasoning chains to improve clinical chain-of-thought performance.
 
@@ -26,7 +26,7 @@ pip install torch transformers openai tqdm matplotlib numpy
 
 ### 1. Data Generation
 
-Generate ranked reasoning pairs for RPRO training using the probabilistic refinement pipeline:
+Generate ranked reasoning pairs for RGPO training using the probabilistic refinement pipeline:
 
 ```bash
 # Using OpenAI API (recommended)
@@ -57,7 +57,7 @@ The `cot_rpro_pairs_5_to_4.py` script follows this 5→4 selection process:
 2. **Score variants** on Coverage, Factual Accuracy, and Redundancy (0-5 scale)
 3. **Rank and select top 4** variants based on aggregate scores
 4. **Apply probabilistic refinement** using acceptance threshold
-5. **Output ranked data** in RPRO format
+5. **Output ranked data** in RGPO format
 
 #### Environment Variables
 
@@ -80,23 +80,23 @@ export OPENAI_MODEL_REVISE="gpt-4o-mini"               # Revision model
 #### Data Format
 
 Input: Medical QA data with `QUESTION`, `CONTEXTS`, and `final_decision` fields
-Output: JSONL with ranked reasoning chains for RPRO training
+Output: JSONL with ranked reasoning chains for RGPO training
 
-### RPRO Training
+### RGPO Training
 
-The training script uses `JsonlRPROTrainer` class with the following configuration:
+The training script uses `JsonlRGPOTrainer` class with the following configuration:
 
 ```python
-# Default configuration from rpro_trainer.py
-trainer = JsonlRPROTrainer(
+# Default configuration from rgpo_trainer.py
+trainer = JsonlRGPOTrainer(
     model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0",
     beta=0.01,        # KL divergence coefficient
     temperature=1.0   # Sampling temperature
 )
 
 trainer.train(
-    data_file="/content/rpro_cot_pairs.jsonl",
-    output_dir="./rpro_output",
+    data_file="/content/rgpo_cot_pairs.jsonl",
+    output_dir="./rgpo_output",
     epochs=30,        # Training epochs
     batch_size=1,     # Batch size (memory constrained)
     lr=1e-6,          # Learning rate
@@ -116,7 +116,7 @@ trainer.train(
 #### Training Outputs
 
 ```
-rpro_output/
+rgpo_output/
 ├── checkpoint-epoch-1/          # Model checkpoints
 ├── checkpoint-epoch-2/
 ├── ...
@@ -137,14 +137,14 @@ os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 Evaluate ranking accuracy on test data:
 
 ```python
-trainer.evaluate_preferences("/content/rpro_cot_pairs.jsonl")
+trainer.evaluate_preferences("/content/rgpo_cot_pairs.jsonl")
 ```
 
 The evaluation computes ranking accuracy by checking if policy log-probabilities follow the expected order.
 
 ## Algorithm Details
 
-### RPRO Loss Function
+### RGPO Loss Function
 
 The total loss combines three components:
 
@@ -179,17 +179,17 @@ Refinement is triggered when P(accept) < threshold.
 ## File Structure
 
 ```
-├── rpro_trainer.py           # Main RPRO training implementation
-├── cot_rpro_pairs_5_to_4.py  # Data generation pipeline
+├── rgpo_trainer.py           # Main RGPO training implementation
+├── cot_rgpo_pairs_5_to_4.py  # Data generation pipeline
 ├── loss_history.csv          # Training metrics
 ├── loss_curve.png           # Loss visualization
-└── rpro_output/
+└── rgpo_output/
     ├── checkpoint-epoch-*/   # Model checkpoints
     └── final_model/         # Final trained model
 ```
 
 ## Citation
-
+<!--
 ```bibtex
 @article{hsu2025rpro,
   title={RPRO: Ranked Preference Reinforcement Optimization for Enhancing Medical QA and Diagnostic Reasoning},
@@ -198,6 +198,7 @@ Refinement is triggered when P(accept) < threshold.
   year={2025}
 }
 ```
+-->
 
 ## License
 
