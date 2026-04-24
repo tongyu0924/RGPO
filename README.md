@@ -1,6 +1,3 @@
-Readme · MD
-Copy
-
 # RGPO: Ranking-Guided Preference Optimization for Reliable Clinical Reasoning
  
 A novel framework that enhances medical question answering by combining reinforcement learning with preference-driven reasoning refinement. RGPO automatically identifies and corrects low-quality reasoning chains to improve clinical chain-of-thought performance.
@@ -37,7 +34,7 @@ export INPUT_PATH="/path/to/medical_qa_data.json"
 export OUTPUT_PATH="/path/to/rgpo_cot_pairs.jsonl"
 export ACCEPTANCE_THRESHOLD="0.6"
  
-python data_generation.py
+python cot_rgpo_pairs_5_to_4.py
 ```
  
 ```bash
@@ -46,7 +43,7 @@ export HF_MODEL="HuggingFaceH4/zephyr-7b-beta"
 export INPUT_PATH="/path/to/medical_qa_data.json"
 export OUTPUT_PATH="/path/to/rgpo_cot_pairs.jsonl"
  
-python data_generation.py
+python cot_rgpo_pairs_5_to_4.py
 ```
  
 ## Detailed Usage
@@ -56,7 +53,7 @@ python data_generation.py
 The `cot_rgpo_pairs_5_to_4.py` script follows this 5→4 selection process:
  
 1. **Generate 5 CoT variants** for each question using task-adaptive templates
-2. **Score variants** on Coverage, Factual Accuracy, and Redundancy (0-5 scale)
+2. **Score variants** on Coverage (0–5), Factual Accuracy (0–5), and Redundancy (0–1)
 3. **Rank and select top 4** variants based on aggregate scores
 4. **Apply probabilistic refinement** using acceptance threshold
 5. **Output ranked data** in RGPO format
@@ -178,10 +175,14 @@ Refinement is triggered when P_accept(c) < threshold θ (default θ = 0.6).
 ## File Structure
  
 ```
-├── rgpo_trainer.py               # Main RGPO training implementation
-├── cot_rgpo_pairs_5_to_4.py      # Data generation pipeline
+├── cot_rgpo_pairs_5_to_4.py      # Entry point: RGPO dataset generation (5→4)
+├── config.py                     # Runtime configuration and hyperparameters
+├── prompts.py                    # Task-adaptive CoT prompt templates (τ_QA / τ_Diag)
+├── scoring.py                    # Probabilistic quality assessment (P_accept, Eq. 3–4)
+├── generation.py                 # LLM backend, CoT generation and revision
+├── rgpo_trainer.py               # RGPO training implementation
 ├── loss_history.csv              # Training metrics
-├── loss_curve.png               # Loss visualization
+├── loss_curve.png                # Loss visualization
 └── rgpo_output/
     ├── checkpoint-epoch-*/       # Model checkpoints
     └── final_model/             # Final trained model
@@ -203,4 +204,3 @@ If you find this work useful, please consider citing our paper.
 ## License
  
 This project is licensed under the MIT License.
- 
