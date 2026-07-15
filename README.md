@@ -1,21 +1,25 @@
 # RGPO: Ranking-Guided Preference Optimization for Reliable Clinical Reasoning
 
+**Accepted by IEEE Transactions on Artificial Intelligence (TAI), 2026**
+
 A novel framework that enhances medical question answering by combining reinforcement learning with preference-driven reasoning refinement. RGPO automatically identifies and corrects low-quality reasoning chains to improve clinical chain-of-thought performance.
 
-## Key Features
+## Key Contributions
 
-- **Reinforcement Learning with Preference Optimization**: Combines RL with preference-driven reasoning enhancement
-- **Automatic Quality Assessment**: Probabilistic evaluation of reasoning chains across multiple dimensions
-- **Groupwise Ranking Optimization**: Beyond traditional pairwise methods using Bradley-Terry model
-- **Medical Domain Optimization**: Task-adaptive reasoning templates for biomedical and clinical contexts
-- **Efficient Training**: Achieves superior performance with a smaller 2B model versus 7B–20B baselines
+- **Probabilistic Refinement**: Multiplicative quality filter over coverage, factual accuracy, and redundancy
+- **Task-Adaptive CoT**: Structured templates for medical QA and diagnostic reasoning
+- **Groupwise Ranking Optimization**: Extends Bradley-Terry to full listwise rankings, beyond pairwise DPO
+- **Linear Reward Shaping**: Position-based rewards that correct rank compression
+- **Efficient Training**: 2B model outperforms 7B–20B baselines on PubMedQA, MedQA-USMLE, and a real-world hospital dataset
 
+<!--
 ## Results
 
 - Outperforms larger 7B–20B models (including medical-specialized variants) on PubMedQA, MedQA-USMLE, and the real-world FEMH clinical dataset
 - Demonstrates that quality-driven refinement beats simple parameter scaling
 - Achieves **62.02% accuracy on PubMedQA** and **51.67% accuracy on MedQA-USMLE** (5-shot setting)
 - On the FEMH real-world clinical dataset, achieves BERTScore-F1 of **0.891** and Cosine Similarity of **0.528** (5-shot setting)
+-->
 
 ## Installation
 
