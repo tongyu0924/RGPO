@@ -1,6 +1,6 @@
 # RGPO: Ranking-Guided Preference Optimization for Reliable Clinical Reasoning
 
-**Accepted by IEEE Transactions on Artificial Intelligence (TAI), 2026**
+### Accepted by IEEE Transactions on Artificial Intelligence (TAI), 2026
 
 A novel framework that enhances medical question answering by combining reinforcement learning with preference-driven reasoning refinement. RGPO automatically identifies and corrects low-quality reasoning chains to improve clinical chain-of-thought performance.
 
