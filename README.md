@@ -21,6 +21,8 @@ A novel framework that enhances medical question answering by combining reinforc
 - On the FEMH real-world clinical dataset, achieves BERTScore-F1 of **0.891** and Cosine Similarity of **0.528** (5-shot setting)
 -->
 
+
+<!--
 ## Installation
 
 ```bash
@@ -202,6 +204,7 @@ Refinement is triggered when P_accept(c) < threshold θ (default θ = 0.6).
     ├── checkpoint-epoch-*/       # Model checkpoints
     └── final_model/             # Final trained model
 ```
+-->
 
 ## Citation
 
