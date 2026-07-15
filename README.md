@@ -21,6 +21,14 @@ A novel framework that enhances medical question answering by combining reinforc
 - On the FEMH real-world clinical dataset, achieves BERTScore-F1 of **0.891** and Cosine Similarity of **0.528** (5-shot setting)
 -->
 
+## Overview
+
+<p align="center">
+  <img src="rgpo_workflow.png" alt="RGPO Workflow Overview" width="800"/>
+</p>
+
+*Code will be released soon.*
+
 
 <!--
 ## Installation
