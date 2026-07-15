@@ -27,7 +27,7 @@ A novel framework that enhances medical question answering by combining reinforc
   <img src="rgpo_workflow.png" alt="RGPO Workflow Overview" width="800"/>
 </p>
 
-*Code will be released soon.*
+### 🚧 Code will be released soon.
 
 
 <!--
