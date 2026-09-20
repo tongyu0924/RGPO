@@ -1,37 +1,41 @@
-# file: config.py
+#!/usr/bin/env python3
 """
-Runtime configuration for RGPO data generation pipeline.
-"""
-from __future__ import annotations
+Configuration and default hyperparameters for RGPO training.
 
+Hyperparameter defaults follow the paper's implementation details
+(Section V-A): base model Gemma 2B, K = 5 candidates per question,
+beta = 0.1, acceptance threshold theta = 0.6 (used upstream during
+dataset construction, not during this training script), AdamW with
+lr = 5e-5, batch size 16, 3 epochs. The reference script here keeps
+a smaller lr/epoch count suited to a single TinyLlama smoke test.
+"""
 import os
 
-# -----------------------------
-# Paths
-# -----------------------------
-INPUT_PATH = os.getenv("INPUT_PATH", "/content/ori_pqal_2.json")
-OUTPUT_PATH = os.getenv("OUTPUT_PATH", "/content/rgpo_cot_pairs.jsonl")
+# HF_TOKEN must be provided via environment variable, e.g.:
+#   export HF_TOKEN="hf_xxx"
+# Do NOT hardcode tokens in source code.
+HF_TOKEN = os.environ.get("HF_TOKEN")
 
-# -----------------------------
-# Refinement
-# -----------------------------
-ACCEPTANCE_THRESHOLD = float(os.getenv("ACCEPTANCE_THRESHOLD", 0.6))
+DEFAULT_MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+DEFAULT_DATA_FILE = "/content/grpo_cot_pairs_250.jsonl"
+DEFAULT_OUTPUT_DIR = "./grpo_output"
 
-# -----------------------------
-# Model backend selection
-# -----------------------------
-USE_OPENAI = os.getenv("OPENAI_API_KEY") is not None
+# --- RGPO objective hyperparameters (paper Section IV) ---
+# beta: weight of the KL regularization term L_KL (Eq. 11)
+DEFAULT_BETA = 0.1
+# tau_BT: Bradley-Terry temperature used in the pairwise ranking loss
+# L_CoT-rank (Eq. 6-7). This is distinct from the sampling temperature
+# tau used for candidate generation.
+DEFAULT_TAU_BT = 1.0
+# Sampling temperature tau used when generating candidate CoTs.
+DEFAULT_TEMPERATURE = 1.0
+# K: number of ranked candidates per question (paper uses K = 5).
+DEFAULT_MAX_LENGTH = 512
 
-OPENAI_MODEL_GENERATE = os.getenv("OPENAI_MODEL_GENERATE", "gpt-4o-mini")
-OPENAI_MODEL_SCORE    = os.getenv("OPENAI_MODEL_SCORE",    "gpt-4o-mini")
-OPENAI_MODEL_REVISE   = os.getenv("OPENAI_MODEL_REVISE",   "gpt-4o-mini")
+# --- Training loop defaults ---
+DEFAULT_EPOCHS = 20
+DEFAULT_BATCH_SIZE = 1
+DEFAULT_LR = 1e-6
+DEFAULT_USE_PAIRWISE = True
 
-HF_MODEL = os.getenv("HF_MODEL", "HuggingFaceH4/zephyr-7b-beta")
-
-# -----------------------------
-# RGPO generation settings
-# (K=5 generate, top M=4 selected — per paper Section III.C)
-# -----------------------------
-NUM_COT_VARIANTS  = 5   # K: number of candidates generated per question
-NUM_TOP_CANDIDATES = 4  # M: top candidates kept after quality ranking
-SAMPLE_SIZE = 900
+CUDA_ALLOC_CONF = "expandable_segments:True"
