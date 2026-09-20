@@ -227,6 +227,8 @@ If you find this work useful, please consider citing our paper.
 }
 ```
 -->
+<!--
 ## License
 
 This project is licensed under the MIT License.
+-->
